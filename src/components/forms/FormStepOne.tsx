@@ -2,9 +2,9 @@ import React from 'react';
 /* eslint-disable react/no-unescaped-entities */
 import { Button } from "../ui/button";
 import CharacterImage from "../ui/characterImage";
-import { Input } from "../ui/input";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import FormDatePicker from './FormDatePicker';
 import FormInput from './FormInput';
+import FormSelectedField from './FormSelectedField';
 
 
 interface FormProps {
@@ -17,6 +17,53 @@ interface FormProps {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
     handleNext: () => void
 }
+
+const genderOptions =
+    [
+        { value: 'female', label: 'Female' },
+        { value: 'male', label: 'Male' },
+    ]
+/**
+ * concern 
+ * Acne & breakouts
+
+Blackheads
+
+Dry skin
+
+
+Fine lines & wrinkles
+
+Dehydrated skin
+
+Dull Skin
+
+Redness
+
+Excess oil
+
+Uneven skin texture
+
+Acne scars
+
+Acne Spot
+
+Hyperpigmentation
+ */
+const concernOptions = [
+    { value: 'Acne & breakouts', label: 'Acne & breakouts' },
+    { value: 'Blackheads', label: 'Blackheads' },
+    { value: 'Dry skin', label: 'Dry skin' },
+    { value: 'Fine lines & wrinkles', label: 'Fine lines & wrinkles' },
+    { value: 'Dehydrated skin', label: 'Dehydrated skin' },
+    { value: 'Dull Skin', label: 'Dull Skin' },
+    { value: 'Redness', label: 'Redness' },
+    { value: 'Excess oil', label: 'Excess oil' },
+    { value: 'Uneven skin texture', label: 'Uneven skin texture' },
+    { value: 'Acne scars', label: 'Acne scars' },
+    { value: 'Acne Spot', label: 'Acne Spot' },
+    { value: 'Hyperpigmentation', label: 'Hyperpigmentation' },
+]
 
 export default function FormStepOne({ formData, handleInputChange, handleNext }: FormProps) {
     return (
@@ -32,7 +79,6 @@ export default function FormStepOne({ formData, handleInputChange, handleNext }:
             </div>
             <CharacterImage />
             <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">What do you like to be called? *</label>
                 {/* <Input
                     type="text"
                     name="name"
@@ -40,60 +86,34 @@ export default function FormStepOne({ formData, handleInputChange, handleNext }:
                     value={formData.name}
                     onChange={(e) => handleInputChange(e)}
                 /> */}
-                <FormInput name="name" type="text" placeholder="Enter your valid name" />
+                <FormInput
+                    label='What do you like to be called? *'
+                    name="name" type="text" placeholder="Enter your valid name" />
             </div>
 
             <div className="flex justify-between ">
                 <div className="w-[145px]">
-
-                    <label className="block text-sm font-medium text-gray-700 mb-1">I'm *</label>
-                    {/* <Select
-
-        options={[
-            { value: 'female', label: 'Female' },
-            { value: 'male', label: 'Male' },
-        ]}
-        value={formData.gender}
-        onChange={(e) => handleInputChange({ target: { name: 'gender', value: e.target.value } })}
-    /> */}
-                    <Select>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Gender" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="female">Female</SelectItem>
-                            <SelectItem value="male">Male</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <FormSelectedField
+                        label="I'm *"
+                        name="gender"
+                        options={genderOptions}
+                        placeholder="Select"
+                    />
                 </div>
                 <div className="w-[145px]">
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Seeking for *</label>
-                    {/* <Select
-        options={[
-            { value: '', label: 'Select Concern' },
-        ]}
-        value={formData.concern}
-        onChange={(e) => handleInputChange({ target: { name: 'concern', value: e.target.value } })}
-    /> */}
-                    <Select>
-                        <SelectTrigger className="w-full">
-                            <SelectValue placeholder="Select Concern" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="light">Light</SelectItem>
-                            <SelectItem value="dark">Dark</SelectItem>
-                            <SelectItem value="system">System</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <FormSelectedField
+                        label="Seeking for *"
+                        name="concern"
+                        options={concernOptions}
+                        placeholder="Select Concern"
+                    />
                 </div>
             </div>
             <div className="w-[145px]">
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date of birth *</label>
-                <Input
-                    className="font-normal text-[13px]"
-                    placeholder="DD/MM/YYYY"
-                    value={formData.dateOfBirth}
-                    onChange={(e) => handleInputChange(e)}
+                <FormDatePicker
+                    label='Date of birth *'
+                    name='date'
+                    defaultValue={new Date("1990-01-01")}
                 />
                 <p className="text-[#FF8A00] text-[8px] ">Who knows maybe a surprise waiting for you...</p>
             </div>
