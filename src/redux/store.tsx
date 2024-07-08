@@ -1,8 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit'
+import formReducer from './formSlice'
 
 
 export const store = configureStore({
-    reducer: {},
+    reducer: {
+        form: formReducer,
+    },
 })
 
 // Infer the `RootState` and `AppDispatch` types from the store itself
