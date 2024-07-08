@@ -1,94 +1,64 @@
-
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { cn } from "@/lib/utils";
 import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 
-type UMDatePickerProps = {
-    onChange?: (valOne: Date | null, valTwo: string) => void;
+type FormDatePickerProps = {
     name: string;
     label?: string;
-    value?: Date;
-    size?: "large" | "small";
     defaultValue?: Date;
 };
 
 const FormDatePicker = ({
     name,
     label,
-    onChange,
-    value,
     defaultValue,
-}: UMDatePickerProps) => {
-    const { control, setValue, getValues } = useFormContext();
-    const [date, setDate] = useState<Date | undefined>(defaultValue || value);
-
-    // Set the default value on initial render
-    useEffect(() => {
-        if (defaultValue) {
-            const formattedDate = format(defaultValue, "yyyy-MM-dd");
-            setValue(name, formattedDate);
-            setDate(defaultValue);
-        }
-    }, [defaultValue, name, setValue]);
-
-    useEffect(() => {
-        setDate(value);
-    }, [value]);
-
-    const handleDateSelect = (selectedDate: Date | undefined) => {
-        if (selectedDate) {
-            const formattedDate = format(selectedDate, "yyyy-MM-dd");
-            setDate(selectedDate);
-            setValue(name, formattedDate);
-            if (onChange) {
-                onChange(selectedDate, formattedDate);
-            }
-        } else {
-            setDate(undefined);
-            setValue(name, undefined);
-            if (onChange) {
-                onChange(null, '');
-            }
-        }
-    };
+}: FormDatePickerProps) => {
+    const { control, formState: { errors } } = useFormContext();
 
     return (
-        <div>
+        <div className="w-full">
             {label && <label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>}
             <Controller
                 name={name}
                 control={control}
-                defaultValue={format(defaultValue || new Date(), "yyyy-MM-dd")} // Use defaultValue or current date as fallback
+                defaultValue={defaultValue}
                 render={({ field }) => (
                     <Popover>
                         <PopoverTrigger asChild>
                             <Button
                                 variant={"outline"}
                                 className={cn(
-                                    "w-[240px] justify-start text-left font-normal",
-                                    !date && "text-muted-foreground"
+                                    "w-full justify-start text-left font-normal",
+                                    !field.value && "text-muted-foreground"
                                 )}
                             >
                                 <CalendarIcon className="mr-2 h-4 w-4" />
-                                {date ? format(date, "PPP") : <span>Pick a date</span>}
+                                {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
                             </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent className="w-auto p-0">
                             <Calendar
                                 mode="single"
-                                selected={date}
-                                onSelect={handleDateSelect}
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                    date > new Date() || date < new Date("1900-01-01")
+                                }
                                 initialFocus
                             />
                         </PopoverContent>
                     </Popover>
                 )}
             />
+            {errors[name] && (
+                <small className="text-red-500 mt-1">
+                    {errors[name]?.message as string}
+                </small>
+            )}
         </div>
     );
 };
