@@ -18,39 +18,12 @@ interface FormProps {
     handleNext: () => void
 }
 
-const genderOptions =
+export const genderOptions =
     [
         { value: 'female', label: 'Female' },
         { value: 'male', label: 'Male' },
     ]
-/**
- * concern 
- * Acne & breakouts
-
-Blackheads
-
-Dry skin
-
-
-Fine lines & wrinkles
-
-Dehydrated skin
-
-Dull Skin
-
-Redness
-
-Excess oil
-
-Uneven skin texture
-
-Acne scars
-
-Acne Spot
-
-Hyperpigmentation
- */
-const concernOptions = [
+export const concernOptions = [
     { value: 'Acne & breakouts', label: 'Acne & breakouts' },
     { value: 'Blackheads', label: 'Blackheads' },
     { value: 'Dry skin', label: 'Dry skin' },
@@ -66,6 +39,7 @@ const concernOptions = [
 ]
 
 export default function FormStepOne({ formData, handleInputChange, handleNext }: FormProps) {
+
     return (
         < div className="space-y-[18px]">
 
@@ -79,13 +53,6 @@ export default function FormStepOne({ formData, handleInputChange, handleNext }:
             </div>
             <CharacterImage />
             <div>
-                {/* <Input
-                    type="text"
-                    name="name"
-                    placeholder="Enter your valid name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange(e)}
-                /> */}
                 <FormInput
                     label='What do you like to be called? *'
                     name="name" type="text" placeholder="Enter your valid name" />
