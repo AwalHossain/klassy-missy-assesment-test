@@ -1,4 +1,5 @@
 'use client'
+import { getErrorMessageByPropertyName } from "@/lib/getErrorMessageByPropertyName";
 import { Controller, useFormContext } from "react-hook-form";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
@@ -27,9 +28,10 @@ const FormSelectedField = ({
     label,
     defaultValue,
 }: IInput) => {
+    const { control, formState: { errors } } = useFormContext();
+    const errorMessage = getErrorMessageByPropertyName(errors, name)
 
 
-    const { control } = useFormContext();
     return (
         <div>
             {label ? (<label className="block text-sm font-medium text-gray-700 mb-1">{label}</label>) : null}
@@ -51,7 +53,7 @@ const FormSelectedField = ({
                     </Select>
                 )}
             />
-
+            <small style={{ color: "red" }}>{errorMessage}</small>
         </div>
     )
 }
