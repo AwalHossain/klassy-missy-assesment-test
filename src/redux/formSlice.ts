@@ -7,7 +7,7 @@ const initialState: FormStateslice = {
   name: '',
   gender: '',
   concern: '',
-  DOB: '',
+  DOB: new Date(),
   concernName: [], // Initialize as an empty array
   eyeConcern: '',
   writtenConcern: '',
