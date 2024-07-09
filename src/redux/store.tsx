@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit'
 import formReducer from './formSlice'
+import kanbanReducer from './kanbanSlice'
 
 
 export const store = configureStore({
     reducer: {
         form: formReducer,
+        kanban: kanbanReducer
     },
 })
 
