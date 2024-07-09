@@ -1,12 +1,14 @@
-/* eslint-disable react/no-unescaped-entities */
-"use client";
+'use client'
 
 import { FormDataSchema } from "@/lib/formSchema";
 import { setFormData } from "@/redux/formSlice";
 import { useAppDispatch } from "@/redux/hooks";
+import { addCard } from "@/redux/kanbanSlice";
+import { getFromLocalStorage, removeFromLocalStorage, setToLocalStorage } from "@/utils/localstorage";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from "framer-motion";
 import debounce from 'lodash/debounce';
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -25,9 +27,11 @@ const FORM_STORAGE_KEY = 'skinRegimenForm';
 
 const SkinRegimenForm = () => {
     const dispatch = useAppDispatch();
+    const router = useRouter();
+
 
     const [currentStep, setCurrentStep] = useState(() => {
-        const savedStep = localStorage.getItem(`${FORM_STORAGE_KEY}_step`);
+        const savedStep = getFromLocalStorage(`${FORM_STORAGE_KEY}_step`);
         return savedStep ? parseInt(savedStep, 10) : 0;
     });
 
@@ -36,7 +40,7 @@ const SkinRegimenForm = () => {
     const methods = useForm<Inputs>({
         resolver: zodResolver(FormDataSchema),
         defaultValues: useMemo(() => {
-            const savedValues = localStorage.getItem(FORM_STORAGE_KEY);
+            const savedValues = getFromLocalStorage(FORM_STORAGE_KEY) || '{}';
             if (savedValues) {
                 const parsedValues = JSON.parse(savedValues);
                 if (parsedValues.DOB && typeof parsedValues.DOB === 'string') {
@@ -51,7 +55,7 @@ const SkinRegimenForm = () => {
     const { handleSubmit, reset, trigger, getValues, watch } = methods;
 
     const persistFormData = useCallback(debounce((data: Inputs) => {
-        localStorage.setItem(FORM_STORAGE_KEY, JSON.stringify(data));
+        setToLocalStorage(FORM_STORAGE_KEY, JSON.stringify(data));
         dispatch(setFormData(data));
     }, 500), [dispatch]);
 
@@ -63,21 +67,32 @@ const SkinRegimenForm = () => {
     }, [watch, persistFormData]);
 
     useEffect(() => {
-        localStorage.setItem(`${FORM_STORAGE_KEY}_step`, currentStep.toString());
+        setToLocalStorage(`${FORM_STORAGE_KEY}_step`, currentStep.toString());
     }, [currentStep]);
 
     const clearFormData = useCallback(() => {
-        localStorage.removeItem(FORM_STORAGE_KEY);
-        localStorage.removeItem(`${FORM_STORAGE_KEY}_step`);
+        removeFromLocalStorage(FORM_STORAGE_KEY);
+        removeFromLocalStorage(`${FORM_STORAGE_KEY}_step`);
         reset();
         dispatch(setFormData({}));
     }, [reset, dispatch]);
 
     const processForm: SubmitHandler<Inputs> = useCallback((data) => {
         console.log(data);
-        clearFormData();
+        const newCard = {
+            id: Date.now().toString(),
+            regimen: `RGM-${Date.now().toString()}`,
+            datetime: new Date().toLocaleString(),
+            name: data.name,
+        };
+        dispatch(addCard({ columnId: 'incoming', card: newCard }));
+        // clearFormData();
+        setTimeout(() => {
+            router.push('/dashboard');
+        }, 100);
+
         // Additional form submission logic here
-    }, [clearFormData]);
+    }, [dispatch, router]);
 
     const next = async () => {
         const fields = STEPS[currentStep].fields;
@@ -87,9 +102,10 @@ const SkinRegimenForm = () => {
 
         if (currentStep < STEPS.length - 1) {
             persistFormData.flush();
-            if (currentStep === STEPS.length - 2) {
-                await handleSubmit(processForm)();
-            }
+            // if (currentStep === STEPS.length - 2) {
+            //     await handleSubmit(processForm)();
+
+            // }
             setCurrentStep(step => step + 1);
         }
     };
@@ -140,13 +156,22 @@ const SkinRegimenForm = () => {
                         className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
                         Prev
                     </Button>
-                    <Button
-                        type='button'
-                        onClick={next}
-                        disabled={currentStep === STEPS.length - 1}
-                        className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
-                        Next
-                    </Button>
+
+                    {currentStep < STEPS.length - 1 ? (
+                        <Button
+                            type='button'
+                            onClick={next}
+                            className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
+                            Next
+                        </Button>
+                    ) : (
+                        <Button
+                            type='submit'
+                            onClick={handleSubmit(processForm)}
+                            className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
+                            Submit
+                        </Button>
+                    )}
                 </div>
             </section>
         </div>
