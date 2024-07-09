@@ -1,4 +1,6 @@
-import { ChildrenProps } from "@/lib/types"
+'use client';
+
+import { ChildrenProps } from "@/lib/types";
 
 const CustomerLayout = ({ children }: ChildrenProps) => {
     return (
