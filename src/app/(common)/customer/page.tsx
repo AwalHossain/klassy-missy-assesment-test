@@ -1,7 +1,8 @@
-"use client"
-
-import SkinRegimenForm from "@/components/CustomerUI/SkinRegimenForm";
+"use client";
 import { Button } from "@/components/ui/button";
+import dynamic from 'next/dynamic';
+
+const SkinRegimenForm = dynamic(() => import('@/components/CustomerUI/SkinRegimenForm'), { ssr: false })
 
 export default function CustomerPage() {
     return (
