@@ -121,15 +121,15 @@ const SkinRegimenForm = () => {
                                 </p>
                             </div>
                             <CharacterImage ImageUrl="/images/girl.png" />
-                            <div>
+                            <div className="sm:max-w-md">
                                 <FormInput
                                     label='What do you like to be called? *'
                                     name="name"
                                     type="text"
                                     placeholder="Enter your valid name" />
                             </div>
-                            <div className="flex justify-between">
-                                <div className="w-[145px]">
+                            <div className="flex justify-between space-x-2">
+                                <div className="w-[145px] sm:w-1/2">
                                     <FormSelectedField
                                         label="I'm *"
                                         name="gender"
@@ -137,7 +137,7 @@ const SkinRegimenForm = () => {
                                         placeholder="Select"
                                     />
                                 </div>
-                                <div className="w-[145px]">
+                                <div className="w-[145px] sm:w-1/2">
                                     <FormSelectedField
                                         label="Seeking for *"
                                         name="concern"
@@ -146,7 +146,7 @@ const SkinRegimenForm = () => {
                                     />
                                 </div>
                             </div>
-                            <div className="w-[145px]">
+                            <div className="w-[145px] sm:w-1/2">
                                 <FormDatePicker
                                     label='Date of birth *'
                                     name='DOB'
@@ -174,6 +174,7 @@ const SkinRegimenForm = () => {
                                     label={`Do you have any eye area concern, ${watch('name')}?`}
                                     name="eyeConcern"
                                     options={concernOptions}
+                                    className="max-w-md"
                                     imageSrc="/images/light.png"
                                 />
                             </div>
