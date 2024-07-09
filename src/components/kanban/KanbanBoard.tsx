@@ -1,35 +1,49 @@
-'use client';
-import React, { useEffect, useState } from 'react';
-import { DragDropContext } from 'react-beautiful-dnd';
-import useDragAndDrop from '../../hooks/useDragAndDrop';
-import { Column as ColumnType } from '../../lib/types';
-import { initialBoardData } from "../data/boardData";
+import React from 'react';
+import { DragDropContext, DropResult } from 'react-beautiful-dnd';
+
+import { useAppDispatch, useAppSelector } from '@/redux/hooks';
+import { moveCard } from '@/redux/kanbanSlice';
 import Column from './Column';
 
 const KanbanBoard: React.FC = () => {
-    const [columns, setColumns] = useState<ColumnType[]>(initialBoardData);
-    const { onDragEnd } = useDragAndDrop(columns, setColumns);
+    const dispatch = useAppDispatch();
+    const { columns } = useAppSelector((state) => state.kanban);
 
-    useEffect(() => {
-        const savedData = localStorage.getItem('kanbanData');
-        if (savedData) {
-            setColumns(JSON.parse(savedData));
+    console.log(columns, 'columns from kanban board');
+
+    // useEffect(() => {
+    //     const savedState = localStorage.getItem('kanbanState');
+    //     if (savedState) {
+    //         dispatch(setInitialState(JSON.parse(savedState)));
+    //     }
+    // }, [dispatch]);
+
+    const onDragEnd = (result: DropResult) => {
+        const { source, destination } = result;
+
+        if (!destination) {
+            return;
         }
-    }, []);
 
-    useEffect(() => {
-        localStorage.setItem('kanbanData', JSON.stringify(columns));
-    }, [columns]);
+        if (
+            source.droppableId !== destination.droppableId ||
+            source.index !== destination.index
+        ) {
+            dispatch(moveCard({
+                sourceColumnId: source.droppableId,
+                destinationColumnId: destination.droppableId,
+                sourceIndex: source.index,
+                destinationIndex: destination.index,
+            }));
+        }
+    };
 
     return (
-        <div className="container mx-auto p-4">
-            <h1 className="text-2xl font-bold mb-4">Client Regimen Request</h1>
+        <div className="flex flex-col md:flex-row w-full h-full gap-4 p-4">
             <DragDropContext onDragEnd={onDragEnd}>
-                <div className="flex md:justify-between space-x-4 overflow-x-auto pb-4 px-10">
-                    {columns.map(column => (
-                        <Column key={column.id} column={column} setColumns={setColumns} />
-                    ))}
-                </div>
+                {Object.entries(columns).map(([columnId, column]) => (
+                    <Column key={columnId} id={columnId} title={column.title} cards={column.cards} />
+                ))}
             </DragDropContext>
         </div>
     );
