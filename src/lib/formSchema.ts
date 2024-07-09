@@ -7,10 +7,14 @@ export const FormDataSchema = z.object({
   name: z.string().min(1, 'Name is required'),
   gender: z.string().min(1, 'Gender is required'),
   concern: z.string().min(1, 'Concern is required'),
-  DOB: z.date().refine((date) => date > specificPastDate, {
-    message: `Date must be after ${specificPastDate.toDateString()}`,
+  DOB: z.string().min(1, 'Date of Birth is required').refine((value) => {
+    const date = new Date(value);
+    return date > specificPastDate;
+  }
+  , {
+    message: 'Date of Birth must be after 01 January 2000',
   }),
-    concernName: z.string().min(1, 'Concern Name is required'),
+    concernName: z.array(z.string()).min(1, 'Concern Name is required'),
     eyeConcern: z.string().min(1, 'Eye Concern is required'),
     writtenConcern: z.string().min(1, 'Written Concern is required')
 })
