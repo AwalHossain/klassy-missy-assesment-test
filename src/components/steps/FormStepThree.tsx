@@ -1,7 +1,9 @@
 import { Player } from '@lottiefiles/react-lottie-player';
+import { redirect } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import lottie from "../../../public/images/speed.json";
 import KanbanBoard from '../kanban/KanbanBoard';
+import { Button } from '../ui/button';
 
 export default function FormStepThree() {
     const [showContent, setShowContent] = useState(false);
@@ -14,6 +16,11 @@ export default function FormStepThree() {
         return () => clearTimeout(timer);
     }, []);
 
+    const clearStorage = () => {
+        localStorage.clear();
+        redirect('/customer');
+        setShowContent(false);
+    };
 
 
     return (
@@ -37,7 +44,12 @@ export default function FormStepThree() {
                     </div>
                 </div>
             ) : (
-                <KanbanBoard />
+                <>
+                    <div>
+                        <Button className='bg-red-400' onClick={clearStorage}>Clear Localstorage</Button>
+                    </div>
+                    <KanbanBoard />
+                </>
             )}
         </div>
     );
