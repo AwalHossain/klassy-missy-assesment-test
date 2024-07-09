@@ -1,3 +1,5 @@
+'use client';
+
 /* eslint-disable react/no-unescaped-entities */
 import { useFormContext } from 'react-hook-form';
 import { concernOptions, genderOptions } from '../data/FormData';
