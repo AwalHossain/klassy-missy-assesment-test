@@ -45,7 +45,7 @@ export const STEPS = [
         name: 'Concerns',
         fields: ['concernName', 'eyeConcern', 'writtenConcern']
     },
-    { id: 'Step 3', name: 'Complete' }
+    // { id: 'Step 3', name: 'Complete' }
 ]
 
 /**
