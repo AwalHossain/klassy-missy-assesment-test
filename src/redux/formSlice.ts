@@ -1,47 +1,44 @@
+import { FormDataSchema } from '@/lib/formSchema';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-export interface FormStateslice {
-  name: string;
-  gender: string;
-  concern: string;
-  dateOfBirth: string;
-}
+import { z } from 'zod';
+export type FormStateslice = z.infer<typeof FormDataSchema>;
 
 const initialState: FormStateslice = {
   name: '',
   gender: '',
   concern: '',
-  dateOfBirth: '',
+  DOB: '',
+  concernName: [], // Initialize as an empty array
+  eyeConcern: '',
+  writtenConcern: '',
 };
 
 const formSlice = createSlice({
   name: 'form',
   initialState,
   reducers: {
-    updateField: (state, action: PayloadAction<{ field: keyof FormStateslice; value: string }>) => {
+    updateField: (state, action: PayloadAction<{ field: keyof FormStateslice; value: any }>) => {
       const { field, value } = action.payload;
-      state[field] = value;
+      (state[field] as any) = value;
     },
-    loadFormData: (state, action: PayloadAction<FormStateslice>) => {
-      return action.payload;
+    setFormData: (state, action: PayloadAction<Partial<FormStateslice>>) => {
+      return { ...state, ...action.payload };
     },
-    resetForm: (state) => {
-      return initialState;
-    },
+    resetForm: () => initialState,
   },
 });
 
-export const { updateField, loadFormData, resetForm } = formSlice.actions;
+
+export const { updateField, setFormData, resetForm } = formSlice.actions;
 
 export default formSlice.reducer;
-
-// Add a function to save the form state to localStorage
+// a function to save the form state to localStorage
 export const saveFormState = (state: FormStateslice) => {
   localStorage.setItem('formData', JSON.stringify(state));
 };
 
-// Add a function to load the form state from localStorage
-export const loadFormState = () => {
+//  a function to load the form state from localStorage
+export const loadFormState = (): FormStateslice | null => {
   const state = localStorage.getItem('formData');
   return state ? JSON.parse(state) as FormStateslice : null;
 };
