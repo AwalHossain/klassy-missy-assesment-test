@@ -2,6 +2,8 @@
 "use client";
 
 import { FormDataSchema } from "@/lib/formSchema";
+import { setFormData } from "@/redux/formSlice";
+import { useAppDispatch } from "@/redux/hooks";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from "framer-motion";
 import debounce from 'lodash/debounce';
@@ -48,14 +50,19 @@ const SkinRegimenForm = () => {
                 if (parsedValues.DOB && typeof parsedValues.DOB === 'string') {
                     parsedValues.DOB = new Date(parsedValues.DOB);
                 }
+                dispatch(setFormData(parsedValues));
                 return parsedValues;
             }
             return {};
         }
     });
 
+    const dispatch = useAppDispatch();
+    // const formData = useAppSelector(state => state.form);
+
     const { handleSubmit, reset, trigger, getValues, setValue, watch } = methods;
 
+    // Load initial data from localStorage
     useEffect(() => {
         const savedStep = localStorage.getItem("currentStep");
         if (savedStep) {
@@ -63,10 +70,20 @@ const SkinRegimenForm = () => {
         }
     }, []);
 
+    // Save to localStorage when form data changes
     const saveFormData = useCallback(debounce(() => {
         const formData = getValues();
         localStorage.setItem("formValues", JSON.stringify(formData));
+        dispatch(setFormData(formData));
     }, 500), [getValues]);
+
+
+    // // Update Redux state when form fields change
+    // const handleFieldChange = (field: keyof Inputs, value: any) => {
+    //     dispatch(updateField({ field, value }));
+    // };
+
+
 
     useEffect(() => {
         const subscription = watch(() => {
@@ -175,7 +192,8 @@ const SkinRegimenForm = () => {
                                             label='What do you like to be called? *'
                                             name="name"
                                             type="text"
-                                            placeholder="Enter your valid name" />
+                                            placeholder="Enter your valid name"
+                                        />
                                     </div>
                                     <div className="flex justify-between space-x-2">
                                         <div className="w-[145px] sm:w-1/2">
