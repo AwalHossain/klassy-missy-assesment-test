@@ -1,46 +1,31 @@
-import { Dialog, DialogTrigger } from "@/components/ui/dialog";
-import { PlusCircle } from "lucide-react";
-import React, { useState } from 'react';
+import { KanbanCard } from '@/redux/types/kanbanTypes';
+import React from 'react';
 import { Droppable } from 'react-beautiful-dnd';
-import { Column as ColumnType } from '../../lib/types';
-import AddCardDialog from "../dialog/AddCardDialog";
 import Card from './Card';
+import ColumnHeader from './ColumnHeader';
+
 
 interface ColumnProps {
-    column: ColumnType;
-    setColumns: React.Dispatch<React.SetStateAction<ColumnType[]>>;
+    id: string;
+    title: string;
+    cards: KanbanCard[];
 }
 
-const Column: React.FC<ColumnProps> = ({ column, setColumns }) => {
-    const [addDialogInfo, setAddDialogInfo] = useState<{ isOpen: boolean; columnId: string } | null>(null);
+const Column: React.FC<ColumnProps> = ({ id, title, cards }) => {
+    console.log(cards, 'cards checkin');
 
     return (
-        <div className="flex-shrink-0 w-96 bg-gray-100 p-4 rounded-lg">
-            <h2 className="text-lg font-semibold mb-2 flex justify-between items-center">
-                {column.title}
-                <Dialog open={addDialogInfo?.isOpen} onOpenChange={(isOpen) => setAddDialogInfo(isOpen ? { isOpen, columnId: column.id } : null)}>
-                    <DialogTrigger>
-                        <PlusCircle className="w-6 h-6 text-green-500 hover:text-green-700" />
-                    </DialogTrigger>
-                    {addDialogInfo && (
-                        <AddCardDialog
-                            columnId={addDialogInfo.columnId}
-                            setColumns={setColumns}
-                            setIsDialogCardOpen={(isOpen) => setAddDialogInfo(isOpen ? addDialogInfo : null)}
-                        />
-                    )}
-                </Dialog>
-            </h2>
-            <Droppable droppableId={column.id}>
-                {(provided, snapshot) => (
+        <div className="flex flex-col w-full md:w-1/3 bg-gray-100 rounded-lg shadow">
+            <ColumnHeader title={title} />
+            <Droppable droppableId={id}>
+                {(provided) => (
                     <div
-                        {...provided.droppableProps}
                         ref={provided.innerRef}
-                        className={`min-h-[500px] transition-colors duration-200 ${snapshot.isDraggingOver ? 'bg-blue-100' : ''
-                            }`}
+                        {...provided.droppableProps}
+                        className="flex-1 p-2 overflow-y-auto"
                     >
-                        {column.cards.map((card, index) => (
-                            <Card key={card.id} card={card} index={index} columnId={column.id} setColumns={setColumns} />
+                        {cards.map((card, index) => (
+                            <Card key={card.id} card={card} index={index} />
                         ))}
                         {provided.placeholder}
                     </div>
