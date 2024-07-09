@@ -1,35 +1,22 @@
 'use client';
+import {
+    Dialog,
+    DialogTrigger
+} from "@/components/ui/dialog";
+import { PlusCircle, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from 'react';
 import { DragDropContext, Draggable, Droppable, DropResult } from 'react-beautiful-dnd';
 import { Card, Column } from '../../lib/types';
-const initialData: Column[] = [
-    {
-        id: 'incoming',
-        title: 'Incoming Request',
-        cards: [
-            { id: '1', regimen: 'RGM1264', timestamp: '21:30:47, 4 June 2024', name: 'Fatima Ahmed' },
-            { id: '2', regimen: 'RGM1255', timestamp: '01:30:47, 2 June 2024', name: 'Shorif Islam' },
-        ],
-    },
-    {
-        id: 'processing',
-        title: 'Processing',
-        cards: [
-            { id: '3', regimen: 'RGM1264', timestamp: '11:30:47, 5 June 2024', name: 'Romana Akter' },
-        ],
-    },
-    {
-        id: 'done',
-        title: 'Done | Updated',
-        cards: [
-            { id: '4', regimen: 'RGM1264', timestamp: '21:30:47, 01 June 2024', name: 'Samiera' },
-        ],
-    },
-];
+import { initialBoardData } from "../data/boardData";
+import AddCardDialog from "../dialog/AddCardDialog";
+import DeleteCardDialog from "../dialog/DeleteCardDialog";
+
+
 
 const KanbanBoard: React.FC = () => {
-    const [columns, setColumns] = useState<Column[]>(initialData);
-
+    const [columns, setColumns] = useState<Column[]>(initialBoardData);
+    const [addDialogInfo, setAddDialogInfo] = useState<{ isOpen: boolean; columnId: string } | null>(null);
+    const [deleteDialogInfo, setDeleteDialogInfo] = useState<{ isOpen: boolean; columnId: string; cardId: string } | null>(null);
     useEffect(() => {
         const savedData = localStorage.getItem('kanbanData');
         if (savedData) {
@@ -90,20 +77,7 @@ const KanbanBoard: React.FC = () => {
         }
     };
 
-    const addCard = (columnId: string) => {
-        const newCard: Card = {
-            id: Date.now().toString(),
-            regimen: 'New Regimen',
-            timestamp: new Date().toLocaleString(),
-            name: 'New Patient',
-        };
 
-        setColumns(prevColumns =>
-            prevColumns.map(col =>
-                col.id === columnId ? { ...col, cards: [...col.cards, newCard] } : col
-            )
-        );
-    };
 
     const editCard = (columnId: string, cardId: string, updatedCard: Card) => {
         setColumns(prevColumns =>
@@ -120,16 +94,6 @@ const KanbanBoard: React.FC = () => {
         );
     };
 
-    const deleteCard = (columnId: string, cardId: string) => {
-        setColumns(prevColumns =>
-            prevColumns.map(col =>
-                col.id === columnId
-                    ? { ...col, cards: col.cards.filter(card => card.id !== cardId) }
-                    : col
-            )
-        );
-    };
-
     return (
         <div className="container mx-auto p-4">
             <h1 className="text-2xl font-bold mb-4">Client Regimen Request</h1>
@@ -137,14 +101,23 @@ const KanbanBoard: React.FC = () => {
                 <div className="flex space-x-4">
                     {columns.map(column => (
                         <div key={column.id} className="flex-1 bg-gray-100 p-4 rounded-lg">
-                            <h2 className="text-lg font-semibold mb-2 flex justify-between items-center">
+                            <h2 className="text-lg font-semibold mb-2 flex justify-between items-center h-screen overflow-y-scroll">
                                 {column.title}
-                                <button
-                                    onClick={() => addCard(column.id)}
-                                    className="text-blue-500 hover:text-blue-700"
-                                >
-                                    +
-                                </button>
+                                <>
+                                    <Dialog open={addDialogInfo?.isOpen} onOpenChange={(isOpen) => setAddDialogInfo(isOpen ? { isOpen, columnId: column.id } : null)}>
+                                        <DialogTrigger>
+                                            <PlusCircle className="w-6 h-6 text-green-500 hover:text-green-700" />
+                                        </DialogTrigger>
+                                        {addDialogInfo && (
+                                            <AddCardDialog
+                                                columnId={addDialogInfo.columnId}
+                                                setColumns={setColumns}
+                                                setIsDialogCardOpen={(isOpen) => setAddDialogInfo(isOpen ? addDialogInfo : null)}
+                                            />
+                                        )}
+                                    </Dialog>
+
+                                </>
                             </h2>
                             <Droppable droppableId={column.id}>
                                 {(provided, snapshot) => (
@@ -177,12 +150,19 @@ const KanbanBoard: React.FC = () => {
                                                             >
                                                                 Edit
                                                             </button>
-                                                            <button
-                                                                onClick={() => deleteCard(column.id, card.id)}
-                                                                className="text-red-500 hover:text-red-700"
-                                                            >
-                                                                Delete
-                                                            </button>
+                                                            <Dialog open={deleteDialogInfo?.isOpen} onOpenChange={(isOpen) => setDeleteDialogInfo(isOpen ? { isOpen, columnId: column.id, cardId: card.id } : null)}>
+                                                                <DialogTrigger>
+                                                                    <Trash2 className="w-6 h-6 text-red-500 hover:text-red-700" />
+                                                                </DialogTrigger>
+                                                                {deleteDialogInfo && (
+                                                                    <DeleteCardDialog
+                                                                        columnId={deleteDialogInfo.columnId}
+                                                                        cardId={deleteDialogInfo.cardId}
+                                                                        setColumns={setColumns}
+                                                                        setIsDeleteDialogCardOpen={(isOpen) => setDeleteDialogInfo(isOpen ? deleteDialogInfo : null)}
+                                                                    />
+                                                                )}
+                                                            </Dialog>
                                                         </div>
                                                     </div>
                                                 )}
