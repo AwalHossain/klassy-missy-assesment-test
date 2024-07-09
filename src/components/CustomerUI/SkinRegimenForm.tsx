@@ -3,13 +3,14 @@
 
 import { FormDataSchema } from "@/lib/formSchema";
 import { setFormData } from "@/redux/formSlice";
-import { useAppDispatch, useAppSelector } from "@/redux/hooks";
+import { useAppDispatch } from "@/redux/hooks";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from "framer-motion";
 import debounce from 'lodash/debounce';
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
+import { STEPS } from "../data/FormData";
 import FormStepOne from "../steps/FormStepOne";
 import FormStepThree from "../steps/FormStepThree";
 import FormStepTwo from "../steps/FormStepTwo";
@@ -18,32 +19,19 @@ import { Button } from "../ui/button";
 
 type Inputs = z.infer<typeof FormDataSchema>
 
-const steps = [
-    {
-        id: 'Step 1',
-        name: 'Personal Information',
-        fields: ['name', 'gender', 'concern', 'DOB']
-    },
-    {
-        id: 'Step 2',
-        name: 'Concerns',
-        fields: ['concernName', 'eyeConcern', 'writtenConcern']
-    },
-    { id: 'Step 3', name: 'Complete' }
-]
+
 
 const FORM_STORAGE_KEY = 'skinRegimenForm';
 
 const SkinRegimenForm = () => {
     const dispatch = useAppDispatch();
-    const reduxFormData = useAppSelector(state => state.form);
 
     const [currentStep, setCurrentStep] = useState(() => {
         const savedStep = localStorage.getItem(`${FORM_STORAGE_KEY}_step`);
         return savedStep ? parseInt(savedStep, 10) : 0;
     });
 
-    const delta = currentStep - (useMemo(() => steps.length - 1, []));
+    const delta = currentStep - (useMemo(() => STEPS.length - 1, []));
 
     const methods = useForm<Inputs>({
         resolver: zodResolver(FormDataSchema),
@@ -92,14 +80,14 @@ const SkinRegimenForm = () => {
     }, [clearFormData]);
 
     const next = async () => {
-        const fields = steps[currentStep].fields;
+        const fields = STEPS[currentStep].fields;
         const output = await trigger(fields as Array<keyof Inputs>, { shouldFocus: true });
 
         if (!output) return;
 
-        if (currentStep < steps.length - 1) {
+        if (currentStep < STEPS.length - 1) {
             persistFormData.flush();
-            if (currentStep === steps.length - 2) {
+            if (currentStep === STEPS.length - 2) {
                 await handleSubmit(processForm)();
             }
             setCurrentStep(step => step + 1);
@@ -113,7 +101,7 @@ const SkinRegimenForm = () => {
     };
     return (
         <div className="max-w-7xl mx-auto">
-            <Stepper steps={steps} currentStep={currentStep} />
+            <Stepper steps={STEPS} currentStep={currentStep} />
             <section className="">
 
                 <FormProvider {...methods}>
@@ -155,7 +143,7 @@ const SkinRegimenForm = () => {
                     <Button
                         type='button'
                         onClick={next}
-                        disabled={currentStep === steps.length - 1}
+                        disabled={currentStep === STEPS.length - 1}
                         className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
                         Next
                     </Button>
