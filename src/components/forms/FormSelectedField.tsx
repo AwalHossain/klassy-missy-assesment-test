@@ -17,6 +17,7 @@ interface IInput {
     label?: string;
     defaultValue?: SelectOptions;
     imageSrc?: string;
+    className?: string;
 }
 
 const FormSelectedField = ({
@@ -28,6 +29,7 @@ const FormSelectedField = ({
     label,
     defaultValue,
     imageSrc,
+    className,
 }: IInput) => {
     const { control, formState: { errors } } = useFormContext();
     const errorMessage = getErrorMessageByPropertyName(errors, name);
@@ -44,7 +46,7 @@ const FormSelectedField = ({
                         name={name}
                         render={({ field: { onChange, value } }) => (
                             <Select onValueChange={onChange} value={value}>
-                                <SelectTrigger className="w-full">
+                                <SelectTrigger className={className}>
                                     <SelectValue placeholder={placeholder} />
                                 </SelectTrigger>
                                 <SelectContent>
