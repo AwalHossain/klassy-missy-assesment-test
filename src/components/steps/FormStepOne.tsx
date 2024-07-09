@@ -1,65 +1,33 @@
-import React from 'react';
 /* eslint-disable react/no-unescaped-entities */
-import FormDatePicker from '../forms/FormDatePicker';
-import FormInput from '../forms/FormInput';
-import FormSelectedField from '../forms/FormSelectedField';
-import { Button } from "../ui/button";
+import { useFormContext } from 'react-hook-form';
+import { concernOptions, genderOptions } from '../data/FormData';
+import FormDatePicker from "../forms/FormDatePicker";
+import FormInput from "../forms/FormInput";
+import FormSelectedField from "../forms/FormSelectedField";
 import CharacterImage from "../ui/characterImage";
 
-
-interface FormProps {
-    formData: {
-        name: string;
-        gender: string;
-        concern: string;
-        dateOfBirth: string;
-    }
-    handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void
-    handleNext: () => void
-}
-
-export const genderOptions =
-    [
-        { value: 'female', label: 'Female' },
-        { value: 'male', label: 'Male' },
-    ]
-export const concernOptions = [
-    { value: 'Acne & breakouts', label: 'Acne & breakouts' },
-    { value: 'Blackheads', label: 'Blackheads' },
-    { value: 'Dry skin', label: 'Dry skin' },
-    { value: 'Fine lines & wrinkles', label: 'Fine lines & wrinkles' },
-    { value: 'Dehydrated skin', label: 'Dehydrated skin' },
-    { value: 'Dull Skin', label: 'Dull Skin' },
-    { value: 'Redness', label: 'Redness' },
-    { value: 'Excess oil', label: 'Excess oil' },
-    { value: 'Uneven skin texture', label: 'Uneven skin texture' },
-    { value: 'Acne scars', label: 'Acne scars' },
-    { value: 'Acne Spot', label: 'Acne Spot' },
-    { value: 'Hyperpigmentation', label: 'Hyperpigmentation' },
-]
-
-export default function FormStepOne({ formData, handleInputChange, handleNext }: FormProps) {
+const FormStepOne = () => {
+    const { watch } = useFormContext();
 
     return (
-        < div className="space-y-[18px]">
-
-            <div className="mb-6 ">
-
-                <h2 className="text-[15px] font-semibold text-center">Let's get started!</h2>
-                <p className="text-center text-[10px]">
-                    It'll take 2-3 minutes to understand you
-                    and your skin concern.
+        <div className="space-y-[18px]">
+            <div className="mb-6">
+                <h2 className="text-[15px] md:text-2xl font-semibold text-center">Let's get started!</h2>
+                <p className="text-center text-[10px md:text-xl]">
+                    It'll take 2-3 minutes to understand you and your skin concern.
                 </p>
             </div>
-            <CharacterImage ImageUrl='/images/girl.png' />
-            <div>
+            <CharacterImage ImageUrl="/images/girl.png" />
+            <div className="sm:max-w-md">
                 <FormInput
                     label='What do you like to be called? *'
-                    name="name" type="text" placeholder="Enter your valid name" />
+                    name="name"
+                    type="text"
+                    placeholder="Enter your valid name"
+                />
             </div>
-
-            <div className="flex justify-between ">
-                <div className="w-[145px]">
+            <div className="flex justify-between space-x-2">
+                <div className="w-[145px] sm:w-1/2">
                     <FormSelectedField
                         label="I'm *"
                         name="gender"
@@ -67,7 +35,7 @@ export default function FormStepOne({ formData, handleInputChange, handleNext }:
                         placeholder="Select"
                     />
                 </div>
-                <div className="w-[145px]">
+                <div className="w-[145px] sm:w-1/2">
                     <FormSelectedField
                         label="Seeking for *"
                         name="concern"
@@ -76,18 +44,15 @@ export default function FormStepOne({ formData, handleInputChange, handleNext }:
                     />
                 </div>
             </div>
-            <div className="w-[145px]">
+            <div className="w-[145px] sm:w-1/2">
                 <FormDatePicker
                     label='Date of birth *'
-                    name='date'
-                    defaultValue={new Date("1990-01-01")}
+                    name='DOB'
                 />
-                <p className="text-[#FF8A00] text-[8px] ">Who knows maybe a surprise waiting for you...</p>
-            </div>
-            <div className="mt-[24px] flex">
-
-                <Button onClick={handleNext} className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]" >Next</Button>
+                <p className="text-[#FF8A00] text-[8px]">Who knows maybe a surprise waiting for you...</p>
             </div>
         </div>
-    )
-}
+    );
+};
+
+export default FormStepOne;
