@@ -13,7 +13,6 @@ import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { STEPS } from "../data/FormData";
 import FormStepOne from "../steps/FormStepOne";
-import FormStepThree from "../steps/FormStepThree";
 import FormStepTwo from "../steps/FormStepTwo";
 import Stepper from "../steps/Stepper";
 import { Button } from "../ui/button";
@@ -100,19 +99,11 @@ const SkinRegimenForm = () => {
                         )}
 
                         {currentStep === 1 && (
-                            <motion.div
-                                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            <div
                             >
                                 <FormStepTwo />
-                            </motion.div>
+                            </div>
                         )}
-                        {
-                            currentStep === 2 && (
-                                <FormStepThree />
-                            )
-                        }
                     </form>
                 </FormProvider>
                 <div className="mt-[24px] flex">
