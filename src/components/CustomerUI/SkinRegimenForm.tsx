@@ -1,15 +1,15 @@
 'use client'
 
 import { FormDataSchema } from "@/lib/formSchema";
-import { setCurrentStep, setFormData } from "@/redux/formSlice";
+import { setFormData, setCurrentStep as setReduxCurrentStep } from "@/redux/formSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { addCard } from "@/redux/kanbanSlice";
 import { removeFromLocalStorage } from "@/utils/localstorage";
 import { zodResolver } from '@hookform/resolvers/zod';
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
-import { FormProvider, SubmitHandler, useForm } from 'react-hook-form';
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { FormProvider, useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { STEPS } from "../data/FormData";
 import FormStepOne from "../steps/FormStepOne";
@@ -22,23 +22,22 @@ type Inputs = z.infer<typeof FormDataSchema>
 const SkinRegimenForm = () => {
     const dispatch = useAppDispatch();
     const router = useRouter();
-    const { currentStep, ...formData } = useAppSelector((state) => state.form);
+    const { currentStep: reduxStep, ...formData } = useAppSelector((state) => state.form);
+    const [localStep, setLocalStep] = useState(reduxStep);
 
-    const delta = currentStep - (useMemo(() => STEPS.length - 1, []));
+    useEffect(() => {
+        setLocalStep(reduxStep);
+    }, [reduxStep]);
 
     const methods = useForm<Inputs>({
         resolver: zodResolver(FormDataSchema),
         defaultValues: useMemo(() => {
-            // change date value from string to date object
             const { DOB, ...rest } = formData;
-            if (DOB) {
-                return { ...rest, DOB: new Date(DOB) };
-            }
-            return formData;
+            return DOB ? { ...rest, DOB: new Date(DOB) } : formData;
         }, [formData])
     });
 
-    const { handleSubmit, reset, trigger, getValues } = methods;
+    const { handleSubmit, trigger, getValues } = methods;
 
     const persistFormData = useCallback((data: Inputs) => {
         dispatch(setFormData(data));
@@ -46,13 +45,12 @@ const SkinRegimenForm = () => {
 
     const clearForm = useCallback(() => {
         dispatch(setFormData({}));
-        dispatch(setCurrentStep(0));
+        dispatch(setReduxCurrentStep(0));
+        setLocalStep(0);
         removeFromLocalStorage('skinRegimenForm');
     }, [dispatch]);
 
-
-    const processForm: SubmitHandler<Inputs> = useCallback((data) => {
-        console.log(data);
+    const processForm = useCallback((data: Inputs) => {
         const newCard = {
             id: Date.now().toString(),
             regimen: `RGM-${Date.now().toString()}`,
@@ -60,78 +58,80 @@ const SkinRegimenForm = () => {
             ...data,
         };
         dispatch(addCard({ columnId: 'incoming', card: newCard }));
-        router.push('/dashboard')
-        clearForm()
+        router.push('/dashboard');
+        clearForm();
     }, [dispatch, router, clearForm]);
 
-    const next = async (e: React.MouseEvent) => {
-        e.preventDefault(); // Prevent default form submission
-        const fields = STEPS[currentStep].fields;
-        const output = await trigger(fields as Array<keyof Inputs>, { shouldFocus: true });
+    const next = async () => {
+        const fields = STEPS[localStep].fields;
+        const isValid = await trigger(fields as Array<keyof Inputs>, { shouldFocus: true });
 
-        if (!output) return;
-
-        if (currentStep < STEPS.length - 1) {
+        if (isValid && localStep < STEPS.length - 1) {
             persistFormData(getValues());
-            dispatch(setCurrentStep(currentStep + 1));
+            setLocalStep(prev => prev + 1);
+            dispatch(setReduxCurrentStep(localStep + 1));
         }
     };
+
     const prev = () => {
-        if (currentStep > 0) {
-            dispatch(setCurrentStep(currentStep - 1));
+        if (localStep > 0) {
+            setLocalStep(prev => prev - 1);
+            dispatch(setReduxCurrentStep(localStep - 1));
+        }
+    };
+
+    const renderStep = () => {
+        switch (localStep) {
+            case 0: return <FormStepOne />;
+            case 1: return <FormStepTwo />;
+            default: return null;
         }
     };
 
     return (
         <div className="max-w-4xl mx-auto">
-            <Stepper steps={STEPS} currentStep={currentStep} />
-            <section className="">
-                <FormProvider {...methods}>
-                    <form onSubmit={handleSubmit(processForm)} >
-                        {currentStep === 0 && (
-                            <motion.div
-                                initial={{ x: delta >= 0 ? '50%' : '-50%', opacity: 0 }}
-                                animate={{ x: 0, opacity: 1 }}
-                                transition={{ duration: 0.3, ease: 'easeInOut' }}
-                            >
-                                <FormStepOne />
-                            </motion.div>
-                        )}
-
-                        {currentStep === 1 && (
-                            <div
-                            >
-                                <FormStepTwo />
-                            </div>
-                        )}
-                    </form>
-                </FormProvider>
-                <div className="mt-[24px] flex">
-                    <Button
-                        type='button'
-                        onClick={prev}
-                        disabled={currentStep === 0}
-                        className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
-                        Prev
-                    </Button>
-
-                    {currentStep < STEPS.length - 1 ? (
+            <Stepper steps={STEPS} currentStep={localStep} />
+            <FormProvider {...methods}>
+                <form onSubmit={handleSubmit(processForm)}>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={localStep}
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -50 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {renderStep()}
+                        </motion.div>
+                    </AnimatePresence>
+                    <div className="mt-6 flex justify-between">
                         <Button
-                            type='button'
-                            onClick={next}
-                            className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
-                            Next
+                            type="button"
+                            onClick={prev}
+                            disabled={localStep === 0}
+                            className="bg-black w-24 h-10"
+                        >
+                            Prev
                         </Button>
-                    ) : (
-                        <Button
-                            type='submit'
-                            onClick={handleSubmit(processForm)}
-                            className="mx-auto bg-black w-[67px] h-[25px] py-1 px-[18px]">
-                            Submit
-                        </Button>
-                    )}
-                </div>
-            </section>
+                        {localStep < STEPS.length - 1 ? (
+                            <Button
+                                type="button"
+                                onClick={next}
+                                className="bg-black w-24 h-10"
+                            >
+                                Next
+                            </Button>
+                        ) : (
+                            <Button
+                                type="submit"
+                                className="bg-black w-24 h-10"
+                            >
+                                Submit
+                            </Button>
+                        )}
+                    </div>
+                </form>
+            </FormProvider>
         </div>
     );
 };
