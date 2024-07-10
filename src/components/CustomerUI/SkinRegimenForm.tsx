@@ -61,13 +61,12 @@ const SkinRegimenForm = () => {
             ...data,
         };
         dispatch(addCard({ columnId: 'incoming', card: newCard }));
-        setTimeout(() => {
-            router.push('/dashboard');
-        }, 50);
+        router.push('/dashboard')
         clearForm()
     }, [dispatch, router, clearForm]);
 
-    const next = async () => {
+    const next = async (e: React.MouseEvent) => {
+        e.preventDefault(); // Prevent default form submission
         const fields = STEPS[currentStep].fields;
         const output = await trigger(fields as Array<keyof Inputs>, { shouldFocus: true });
 
@@ -78,7 +77,6 @@ const SkinRegimenForm = () => {
             dispatch(setCurrentStep(currentStep + 1));
         }
     };
-
     const prev = () => {
         if (currentStep > 0) {
             dispatch(setCurrentStep(currentStep - 1));
