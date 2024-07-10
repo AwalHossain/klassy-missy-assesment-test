@@ -36,7 +36,7 @@ export function DatePicker({ setValue }: DatePickerProps) {
                 </Button>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0" align="start">
-                <Calendar
+                {/* <Calendar
                     mode="single"
                     selected={date}
                     onSelect={(date) => {
@@ -44,6 +44,18 @@ export function DatePicker({ setValue }: DatePickerProps) {
                         setDate(date)
                     }}
 
+                    initialFocus
+                /> */}
+                <Calendar
+                    mode="single"
+                    captionLayout="dropdown-buttons"
+                    selected={date}
+                    onSelect={(date) => {
+                        setDate(date)
+                        setDate(date)
+                    }}
+                    fromYear={1960}
+                    toYear={2030}
                     initialFocus
                 />
             </PopoverContent>
