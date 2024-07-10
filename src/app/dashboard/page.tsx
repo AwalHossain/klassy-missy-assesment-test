@@ -20,7 +20,7 @@ export default function DashboardPage() {
 
     const clearStorage = () => {
         localStorage.clear();
-        router.push('/customer');
+        window.location.replace('/customer');
         setShowContent(false);
     };
 
@@ -38,7 +38,9 @@ export default function DashboardPage() {
                     >
                     </Player>
                     <div className="mb-6">
-                        <h1 className="text-[20px] font-semibold text-center">Analyzing Your Concern</h1>
+                        <div className="w-full">
+                            <h1 className="text-[20px] font-semibold text-center mx-auto">Analyzing Your Concern</h1>
+                        </div>
                         {/* <h2 className="text-[15px] font-semibold text-center">Thank you for sharing your concerns!</h2> */}
                         <p className="text-center text-[10px]">
                             We are analyzing your concerns and will get back to you with the best solution.
@@ -47,8 +49,8 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <>
-                    <div>
-                        <Button className='bg-red-400' onClick={clearStorage}>Clear Localstorage</Button>
+                    <div className="flex justify-center mt-2">
+                        <Button className='bg-red-400 mx-auto' onClick={clearStorage}>Clear State</Button>
                     </div>
                     <KanbanBoard />
                 </>
