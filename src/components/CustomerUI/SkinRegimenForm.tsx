@@ -4,7 +4,7 @@ import { FormDataSchema } from "@/lib/formSchema";
 import { setCurrentStep, setFormData } from "@/redux/formSlice";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
 import { addCard } from "@/redux/kanbanSlice";
-import { clearLocalStorage } from "@/utils/localstorage";
+import { removeFromLocalStorage } from "@/utils/localstorage";
 import { zodResolver } from '@hookform/resolvers/zod';
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -45,6 +45,13 @@ const SkinRegimenForm = () => {
         dispatch(setFormData(data));
     }, [dispatch]);
 
+    const clearForm = useCallback(() => {
+        dispatch(setFormData({}));
+        dispatch(setCurrentStep(0));
+        removeFromLocalStorage('skinRegimenForm');
+    }, [dispatch]);
+
+
     const processForm: SubmitHandler<Inputs> = useCallback((data) => {
         console.log(data);
         const newCard = {
@@ -57,8 +64,8 @@ const SkinRegimenForm = () => {
         setTimeout(() => {
             router.push('/dashboard');
         }, 50);
-        clearLocalStorage();
-    }, [dispatch, router]);
+        clearForm()
+    }, [dispatch, router, clearForm]);
 
     const next = async () => {
         const fields = STEPS[currentStep].fields;
