@@ -11,12 +11,6 @@ const KanbanBoard: React.FC = () => {
 
     console.log(columns, 'columns from kanban board');
 
-    // useEffect(() => {
-    //     const savedState = localStorage.getItem('kanbanState');
-    //     if (savedState) {
-    //         dispatch(setInitialState(JSON.parse(savedState)));
-    //     }
-    // }, [dispatch]);
 
     const onDragEnd = (result: DropResult) => {
         const { source, destination } = result;
@@ -39,12 +33,19 @@ const KanbanBoard: React.FC = () => {
     };
 
     return (
-        <div className="flex flex-col md:flex-row w-full h-full gap-4 p-4">
-            <DragDropContext onDragEnd={onDragEnd}>
-                {Object.entries(columns).map(([columnId, column]) => (
-                    <Column key={columnId} id={columnId} title={column.title} cards={column.cards} />
-                ))}
-            </DragDropContext>
+        <div className="w-full h-screen p-4 overflow-x-auto md:overflow-x-visible">
+            <div className="inline-flex md:flex md:flex-wrap gap-4 min-w-full">
+                <DragDropContext onDragEnd={onDragEnd}>
+                    {Object.entries(columns).map(([columnId, column]) => (
+                        <Column
+                            key={columnId}
+                            id={columnId}
+                            title={column.title}
+                            cards={column.cards}
+                        />
+                    ))}
+                </DragDropContext>
+            </div>
         </div>
     );
 };
