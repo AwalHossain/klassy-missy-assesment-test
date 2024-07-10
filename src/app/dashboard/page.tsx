@@ -3,6 +3,7 @@ import KanbanBoard from "@/components/kanban/KanbanBoard";
 import { Button } from '@/components/ui/button';
 import { clearLocalStorage } from "@/utils/localstorage";
 import { Player } from '@lottiefiles/react-lottie-player';
+import { Home, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import lottie from "../../../public/images/speed.json";
@@ -21,6 +22,10 @@ export default function DashboardPage() {
 
     const clearStorage = () => {
         clearLocalStorage();
+        window.location.replace('/customer');
+        setShowContent(false);
+    };
+    const handleHome = () => {
         window.location.replace('/customer');
         setShowContent(false);
     };
@@ -50,8 +55,13 @@ export default function DashboardPage() {
                 </div>
             ) : (
                 <>
-                    <div className="flex justify-center mt-2">
-                        <Button className='bg-red-400 mx-auto' onClick={clearStorage}>Clear State</Button>
+                    <div className="flex justify-around mt-2">
+                        <Button className='bg-red-400 mx-auto' onClick={clearStorage}>
+                            <X size={14} className="mr-1" />
+                            Clear State</Button>
+                        <Button className='bg-green-400 mx-auto' onClick={handleHome}>
+                            <Home size={14} className="mr-1" /> Home
+                        </Button>
                     </div>
                     <KanbanBoard />
                 </>
