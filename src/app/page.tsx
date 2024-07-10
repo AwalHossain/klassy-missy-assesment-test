@@ -1,9 +1,6 @@
+import { redirect } from "next/navigation";
 
 export default function Home() {
 
-  return (
-    <div>
-      Hello there
-    </div>
-  )
+  return redirect('/customer');
 }
