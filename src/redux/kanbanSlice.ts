@@ -1,10 +1,10 @@
+import { getFromLocalStorage, setToLocalStorage } from '@/utils/localstorage';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { KanbanCard, KanbanState } from './types/kanbanTypes';
 
-
 const loadState = (): KanbanState | undefined => {
   try {
-    const serializedState = localStorage.getItem('kanbanState');
+    const serializedState = getFromLocalStorage('kanbanState');
     return serializedState ? JSON.parse(serializedState) : undefined;
   } catch (err) {
     console.error("Could not load state from localStorage", err);
@@ -12,6 +12,14 @@ const loadState = (): KanbanState | undefined => {
   }
 };
 
+const saveState = (state: KanbanState) => {
+  try {
+    const serializedState = JSON.stringify(state);
+    setToLocalStorage('kanbanState', serializedState);
+  } catch (err) {
+    console.error("Could not save state to localStorage", err);
+  }
+};
 
 const initialState: KanbanState = {
   columns: {
@@ -38,8 +46,7 @@ const kanbanSlice = createSlice({
       const { columnId, card } = action.payload;
       state.columns[columnId].cards.unshift(card);
       console.log(state, 'state');
-      
-      localStorage.setItem('kanbanState', JSON.stringify(state));
+      saveState(state);
     },
     moveCard: (state, action: PayloadAction<{
       sourceColumnId: string;
@@ -50,7 +57,7 @@ const kanbanSlice = createSlice({
       const { sourceColumnId, destinationColumnId, sourceIndex, destinationIndex } = action.payload;
       const [removed] = state.columns[sourceColumnId].cards.splice(sourceIndex, 1);
       state.columns[destinationColumnId].cards.splice(destinationIndex, 0, removed);
-      localStorage.setItem('kanbanState', JSON.stringify(state));
+      saveState(state);
     },
   },
 });
