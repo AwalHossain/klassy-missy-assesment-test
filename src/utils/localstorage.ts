@@ -39,3 +39,16 @@ export const removeFromLocalStorage = (key:string) => {
     }
   }
 };
+
+
+// remove all
+
+export const clearLocalStorage = () => {
+  if (typeof window !== "undefined") {
+    try {
+      localStorage.clear();
+    } catch (error) {
+      console.error(`Error clearing localStorage: ${error}`);
+    }
+  }
+};
