@@ -14,12 +14,12 @@ const FormStepOne = () => {
     return (
         <div className="space-y-[18px]">
             <div className="mb-6">
-                <h2 className="text-[15px] md:text-2xl font-semibold text-center">Let's get started!</h2>
-                <p className="text-center text-[10px md:text-xl]">
+                <h2 className="text-[15px] md:text-[18px] font-semibold text-center">Let's get started!</h2>
+                <p className="text-center text-[10px] md:text-[14px]">
                     It'll take 2-3 minutes to understand you and your skin concern.
                 </p>
             </div>
-            <CharacterImage ImageUrl="/images/girl.png" />
+            <CharacterImage ImageUrl="/images/girl.svg" />
             <div className="sm:max-w-md">
                 <FormInput
                     label='What do you like to be called? *'
@@ -51,7 +51,7 @@ const FormStepOne = () => {
                     label='Date of birth *'
                     name='DOB'
                 />
-                <p className="text-[#FF8A00] text-[8px]">Who knows maybe a surprise waiting for you...</p>
+                <p className="text-[#FF8A00] text-[10px]">Who knows maybe a surprise waiting for you...</p>
             </div>
         </div>
     );
