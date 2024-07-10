@@ -15,7 +15,7 @@ const Column: React.FC<ColumnProps> = ({ id, title, cards }) => {
     console.log(cards, 'cards checkin');
 
     return (
-        <div className="flex flex-col h-screen w-full md:w-1/3 bg-gray-100 rounded-lg shadow min-w-[300px] max-w-[90vw] md:min-w-0 md:max-w-none flex-shrink-0 md:flex-shrink md:flex-1">
+        <div className="flex flex-col w-full md:w-1/3 bg-gray-100 rounded-lg shadow min-w-[300px] max-w-[90vw] md:min-w-0 md:max-w-none flex-shrink-0 md:flex-shrink md:flex-1">
 
             <ColumnHeader title={title} />
             <Droppable droppableId={id}>
