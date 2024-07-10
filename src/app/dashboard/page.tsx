@@ -1,6 +1,7 @@
 'use client'
 import KanbanBoard from "@/components/kanban/KanbanBoard";
 import { Button } from '@/components/ui/button';
+import { clearLocalStorage } from "@/utils/localstorage";
 import { Player } from '@lottiefiles/react-lottie-player';
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -19,7 +20,7 @@ export default function DashboardPage() {
     }, []);
 
     const clearStorage = () => {
-        localStorage.clear();
+        clearLocalStorage();
         window.location.replace('/customer');
         setShowContent(false);
     };
