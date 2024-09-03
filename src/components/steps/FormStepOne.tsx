@@ -2,7 +2,7 @@
 
 /* eslint-disable react/no-unescaped-entities */
 import { useFormContext } from 'react-hook-form';
-import { concernOptions, genderOptions } from '../data/FormData';
+import { concernOptions } from '../data/FormData';
 import FormDatePicker from "../forms/FormDatePicker";
 import FormInput from "../forms/FormInput";
 import FormSelectedField from "../forms/FormSelectedField";
@@ -23,18 +23,17 @@ const FormStepOne = () => {
             <div className="sm:max-w-md">
                 <FormInput
                     label='What do you like to be called? *'
-                    name="name"
+                    name="fullName"
                     type="text"
                     placeholder="Enter your valid name"
                 />
             </div>
             <div className="flex justify-between space-x-2">
                 <div className="w-[145px] sm:w-1/2">
-                    <FormSelectedField
-                        label="I'm *"
-                        name="gender"
-                        options={genderOptions}
-                        placeholder="Select"
+                    <FormInput
+                        label="Enter your password *"
+                        name="password"
+                        placeholder="anypass124"
                     />
                 </div>
                 <div className="w-[145px] sm:w-1/2">
