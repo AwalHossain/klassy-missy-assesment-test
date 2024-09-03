@@ -34,6 +34,7 @@ Feast your eyes on our sleek and intuitive interface:
 - TypeScript for enhanced code reliability
 - React Hook for creating reusable components
 - Zod for bulletproof form validation
+- Framer Motion for smooth transition
 
 ## 🚀 Getting Started
 
