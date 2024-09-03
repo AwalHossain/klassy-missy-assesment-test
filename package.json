@@ -21,6 +21,7 @@
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
     "dayjs": "^1.11.11",
+    "formik": "^2.4.6",
     "framer-motion": "^11.2.13",
     "lodash": "^4.17.21",
     "lottie-react": "^2.4.0",
